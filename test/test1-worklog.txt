@@ -1,0 +1,10 @@
+# worklog © 2016 by Paul Signer
+#
+# This file 'C:\git_repos\worklog\test\test1-worklog.txt' was created by
+# worklog r0.1 (build r0.1 2016-09-05)
+# 2016/09/17 - 23:22
+# 
+
+### Saturday 2016/09/17 ###
+2016/09/17 T 23:22 admin itsm comment
+2016/09/17 T 23:22 off  
