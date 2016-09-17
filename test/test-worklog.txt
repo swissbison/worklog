@@ -1,0 +1,80 @@
+#!worklog
+#
+# worklog (c) 2016 by Paul SIgner
+#
+# This file "<path>\worklog.txt" was
+# created by worklog V0.1  (build 0.1 2016-09-01)
+# 2016/09/01 07:54:36
+# for user  in directory <userhome>
+#
+
+### Thursday 2016/09/01 ###
+2016/09/01 T 07:00 admin itshop OTRS#160987 answer question
+2016/09/01 T 12:00 off
+2016/09/01 T 12:30 code itsm KB#ID102 work on powershell tools   
+2016/09/01 T 18:00 off
+
+### Friday 2016/09/02 ###
+2016/09/02 T 08:00 mgmt itshop KB#ID128 Create new task for Xxxxx
+2016/09/02 T 08:30 code itsm Explore OTRS Web Service
+2016/09/02 T 09:30 meet itsm Status call with X.Yyyyyy
+2016/09/02 T 10:30 code itsm Explore OTRS Web Service
+2016/09/02 T 11:00 mgmt itshop Work on tickets
+2016/09/02 T 11:30 code itsm Explore OTRS Web Service
+2016/09/02 T 12:45 off
+2016/09/02 T 13:10 code itsm Explore OTRS Web Service
+2016/09/02 T 15:30 meet itshop Discuss an issue with Xxxxx
+2016/09/02 T 16:00 code itsm Explore OTRS Web Service
+2016/09/02 T 17:00 off
+
+### Monday 2016/09/05 ###
+2016/09/05 T 08:00 mgmt itshop Enable Portal Announcement for deployment r1.3
+2016/09/05 T 08:15 code itsm Explore OTRS Web Service
+2016/09/05 T 08:45 mgmt itshop Work on tickets
+2016/09/05 T 09:00 code itsm Explore OTRS Web Service
+2016/09/05 T 12:00 off
+2016/09/05 T 12:45 code itsm Document how to make OTRS Web Service working
+2016/09/05 T 15:00 mgmt itshop Prepare new SMlets powershell Module
+2016/09/05 T 15:45 code itsm Create ticket using OTRS Web Service
+2016/09/05 T 17:30 off
+
+### Tuesday 2016/09/06 ###
+2016/09/06 T 07:00 admin itshop OTRS#160987 answer question
+2016/09/06 T 09:45 spec itshop write specification
+2016/09/06 T 12:00 off
+2016/09/06 T 12:45 code itsm KB#ID102 work on powershell tools
+2016/09/06 T 15:15 code itsm KB#ID102 work on powershell script
+2016/09/06 T 18:00 off
+
+### Wednesday 2016/09/07 ###
+2016/09/07 D 01:30 admin id-ppf-pm groups meeting
+2016/09/07 D 04:00 educ id-ppf-pm learn about javascript
+2016/09/07 D 03:30 code itsm KB#ID102 work on powershell tools
+
+### Thursday 2016/09/08 ###
+2016/09/08 T 07:00 admin itshop OTRS#160987 answer question
+2016/09/08 T 12:00 off
+2016/09/08 T 12:50 code itsm KB#ID102 work on powershell tools   
+2016/09/08 T 18:00 off
+
+### Friday 2016/09/09 ###
+2016/09/09 D 01:30 admin id-ppf-pm groups meeting
+2016/09/09 D 04:00 educ id-ppf-pm learn about javascript
+2016/09/09 D 03:30 code itsm KB#ID102 work on powershell tools
+
+### Tuesday 2016/09/13 ###
+2016/09/13 D 04:00 admin itshop OTRS#160987 answer question   
+2016/09/13 T 12:50 code itsm KB#ID102 work on powershell tools
+2016/09/13 T 18:00 off
+
+### Tuesday 2016/09/14 ###
+2016/09/14 T 07:00 admin itshop OTRS#160987 answer question   
+2016/09/14 T 12:00 off
+2016/09/14 D 03:50 code itsm KB#ID102 work on powershell tools
+
+### Tuesday 2016/09/15 ###
+2016/09/15 D 23:50 code itsm KB#ID104 work on powershell tools
+
+### Tuesday 2016/09/16 ###
+2016/09/16 D 23:50 code itsm KB#ID104 work on powershell tools
+2016/09/07 T 01:27 code itsm KB#ID0001 comment

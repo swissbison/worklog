@@ -1,0 +1,15 @@
+# worklog © 2016 by Paul Signer
+#
+# This file 'C:\git_repos\worklog\test\test3-worklog.txt' was created by
+# worklog r0.1 (build r0.1 2016-09-05)
+# 2016/09/17 - 23:22
+# 
+
+### Saturday 2016/09/17 ###
+2016/09/17 D 02:00 code itsm this is a comment1
+2016/09/17 D 03:00 mgmt itshop this is a comment2
+2016/09/17 D 01:00 mgmt itshop OTRS#ID#1000001 this is a comment2
+2016/09/17 T 23:22 mgmt itshop this is a comment2
+2016/09/17 T 23:22 code itsm this is a comment1
+2016/09/17 T 23:22 spec itsm KB#10002 this is a comment1
+2016/09/17 T 23:22 off  
