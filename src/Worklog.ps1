@@ -28,23 +28,26 @@ $WorklogTypeOff = 'off'
 $WorklogWorkType = @(
  	"$WorklogTypeOff",
 	'admin',
+    'meet',
     'mgmt',
+   	'educ',
+	'arch',
 	'spec',
 	'code',
-	'arch',
-	'docu',
-	'educ',
-    'test'
+    'test',
+	'docu'
 )
 
 $WorklogProject = @(
-	'ID-PPF-PM',
-	'ITSM'
-	'ITShop'
+	'ID-PPF',
+	'ITSM',
+	'ITShop',
+    'STO'
 )
 
 $WorklogTicketNo = 'n.a.'
 $WorklogTicketPrefix = @(
+    'n.a.',
 	'OTRS#',
 	'KB#'
 )
@@ -97,6 +100,33 @@ function Script:IsTimeValid {
     $IsValid
 }
 
+function Script:ValidateGroupingProperty {
+    Param(
+        [Parameter(Mandatory=$True)]
+        [ValidateSet('WorkType','Project','TicketID')]
+        $GroupingProperty,
+        [Parameter(Mandatory=$True)]
+        $PropertyValue
+    )
+    if($GroupingProperty -eq 'WorkType') {
+        if(!($WorklogWorkType -contains $PropertyValue)) {
+            Throw("Invalid WorkType property: $PropertyValue")
+        }
+    }
+    if($GroupingProperty -eq 'Project') {
+        if(!($WorklogProject -contains $PropertyValue)) {
+            Throw("Invalid Project property: $PropertyValue")
+        }
+    }
+    if($GroupingProperty -eq 'TicketID') {
+        if($PropertyValue -and ($PropertyValue.Length -gt 0)) {
+            if(!(IsTicketIDValid -PotentialTicketID $PropertyValue)) {
+                Throw("Invalid TicketID property: $PropertyValue")
+            }
+        }
+    }
+}
+
 function Script:GetComment {
     Param(
         $ArrayOfToken,
@@ -110,6 +140,21 @@ function Script:GetComment {
         }
     }
     $Comment
+}
+
+function Script:ValidateWorklogItem {
+    Param(
+        $WorklogItem
+    )
+    $WorkType = $WorklogItem.WorkType
+    ValidateGroupingProperty -GroupingProperty WorkType -PropertyValue $WorkType
+    if($WorkType -ne 'off') {
+        ValidateGroupingProperty -GroupingProperty Project -PropertyValue $Project
+        $TicketID = $WorklogItem.TicketID
+        if($TicketID) {
+            ValidateGroupingProperty -GroupingProperty TicketID -PropertyValue $TicketID
+        }
+    }
 }
 
 function Script:GetWorklogFileHeader {
@@ -162,6 +207,14 @@ function Script:ConvertWorklogLine {
         TicketID=$TicketID;
         Comment=$Comment
     }
+
+    try {
+        ValidateWorklogItem -WorklogItem $WorklogLineAsHashtable
+    } catch {
+        $Message = "$($_.ErrorMessage)" + $(Write-WorklogItem -WorklogItem $WorklogLineAsHashtable)
+        Write-Host $Message -ForegroundColor Red
+    }
+
     $WorklogLineAsHashtable
 }
 
@@ -345,33 +398,6 @@ function Script:AddNewDayLine {
     $LastLine = GetLastLine -WorklogFile $WorklogFile
     $LastItem = ConvertWorklogLine -WorklogLine $LastLine
     $LastItem.Date
-}
-
-function Script:ValidateGroupingProperty {
-    Param(
-        [Parameter(Mandatory=$True)]
-        [ValidateSet('WorkType','Project','TicketID')]
-        $GroupingProperty,
-        [Parameter(Mandatory=$True)]
-        $PropertyValue
-    )
-    if($GroupingProperty -eq 'WorkType') {
-        if(!($WorklogWorkType -contains $PropertyValue)) {
-            Throw("Invalid WorkType property: $PropertyValue")
-        }
-    }
-    if($GroupingProperty -eq 'Project') {
-        if(!($WorklogProject -contains $PropertyValue)) {
-            Throw("Invalid Project property: $PropertyValue")
-        }
-    }
-    if($GroupingProperty -eq 'TicketID') {
-        if($PropertyValue -and ($PropertyValue.Length -gt 0)) {
-            if(!(IsTicketIDValid -PotentialTicketID $PropertyValue)) {
-                Throw("Invalid TicketID property: $PropertyValue")
-            }
-        }
-    }
 }
 
 function Script:GetWorklogFile {
