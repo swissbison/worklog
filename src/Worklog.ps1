@@ -34,8 +34,10 @@ $WorklogWorkType = @(
 	'arch',
 	'spec',
 	'code',
-    'test',
-	'docu'
+	'arch',
+	'docu',
+	'educ',
+    'test'
 )
 
 $WorklogProject = @(
@@ -100,31 +102,17 @@ function Script:IsTimeValid {
     $IsValid
 }
 
-function Script:ValidateGroupingProperty {
+function Script:IsDurationTime {
     Param(
-        [Parameter(Mandatory=$True)]
-        [ValidateSet('WorkType','Project','TicketID')]
-        $GroupingProperty,
-        [Parameter(Mandatory=$True)]
-        $PropertyValue
+        $PotentialTime
     )
-    if($GroupingProperty -eq 'WorkType') {
-        if(!($WorklogWorkType -contains $PropertyValue)) {
-            Throw("Invalid WorkType property: $PropertyValue")
-        }
-    }
-    if($GroupingProperty -eq 'Project') {
-        if(!($WorklogProject -contains $PropertyValue)) {
-            Throw("Invalid Project property: $PropertyValue")
-        }
-    }
-    if($GroupingProperty -eq 'TicketID') {
-        if($PropertyValue -and ($PropertyValue.Length -gt 0)) {
-            if(!(IsTicketIDValid -PotentialTicketID $PropertyValue)) {
-                Throw("Invalid TicketID property: $PropertyValue")
-            }
-        }
-    }
+	$RegExDuration = '([dD]\d{2}:\d{2})'
+    if($PotentialTime -match $RegExDuration) {
+        $IsDuration = $True
+    } else {
+        $IsDuration = $False
+    } 
+    $IsDuration
 }
 
 function Script:GetComment {
@@ -400,6 +388,33 @@ function Script:AddNewDayLine {
     $LastItem.Date
 }
 
+function Script:ValidateGroupingProperty {
+    Param(
+        [Parameter(Mandatory=$True)]
+        [ValidateSet('WorkType','Project','TicketID')]
+        $GroupingProperty,
+        [Parameter(Mandatory=$True)]
+        $PropertyValue
+    )
+    if($GroupingProperty -eq 'WorkType') {
+        if(!($WorklogWorkType -contains $PropertyValue)) {
+            Throw("Invalid WorkType property: $PropertyValue")
+        }
+    }
+    if($GroupingProperty -eq 'Project') {
+        if(!($WorklogProject -contains $PropertyValue)) {
+            Throw("Invalid Project property: $PropertyValue")
+        }
+    }
+    if($GroupingProperty -eq 'TicketID') {
+        if($PropertyValue -and ($PropertyValue.Length -gt 0)) {
+            if(!(IsTicketIDValid -PotentialTicketID $PropertyValue)) {
+                Throw("Invalid TicketID property: $PropertyValue")
+            }
+        }
+    }
+}
+
 function Script:GetWorklogFile {
     Param(
         $CustomWorklogFile
@@ -465,6 +480,8 @@ function New-WorklogItem {
         $Comment,
         [Parameter(ParameterSetName='Time')]
         [switch]$Time,
+        [Parameter(ParameterSetName='Time', Mandatory=$False)]
+        $ManualTime,
         [Parameter(ParameterSetName='Duration')]
         [switch]$Duration,
         [Parameter(ParameterSetName='Duration', Mandatory=$True)]
@@ -476,7 +493,11 @@ function New-WorklogItem {
     $CurrentDateAsString = GetCurrentDateAsString
     if($Time) {
         $T_D = 'T'
-        $TimeValue = "{0:HH}:{0:mm}" -f $CurrentDate
+        if($ManualTime) {
+            $TimeValue = $ManualTime
+        } else {
+            $TimeValue = "{0:HH}:{0:mm}" -f $CurrentDate
+        }
     } elseif($Duration) {
         $T_D = 'D'
         $TimeValue = $DurationTime
@@ -484,7 +505,11 @@ function New-WorklogItem {
     validateGroupingProperty -GroupingProperty WorkType -PropertyValue $WorkType
     if($WorkType -eq $WorklogTypeOff) {
         $T_D = 'T'
-        $TimeValue = "{0:HH}:{0:mm}" -f $CurrentDate
+        if($ManualTime) {
+            $TimeValue = $ManualTime
+        } else {
+            $TimeValue = "{0:HH}:{0:mm}" -f $CurrentDate
+        }
     } else {
         validateGroupingProperty -GroupingProperty Project -PropertyValue $Project
         validateGroupingProperty -GroupingProperty TicketID -PropertyValue $TicketID
@@ -495,7 +520,7 @@ function New-WorklogItem {
     } else {
         $WorklogLine = "{0} {1} {2} {3} {4} {5}" -f $CurrentDateAsString,$T_D,$TimeValue,$WorkType,$Project,$Comment
     }
-    #$WorklogLine
+    Write-Host $WorklogLine -ForegroundColor Yellow
     $WorklogFile = GetWorklogFile -CustomWorklogFile $CustomWorklogFile
     AddWorklogLineToFile -WorklogFile $WorklogFile -WorklogLine $WorklogLine
 }
@@ -549,15 +574,25 @@ function Add-WorklogLine {
         $CustomWorklogFile
     )
 
-    
-    #Token:  [0]   [1]  [2]    [3]      [4]
-    #        08:00 mgmt itshop KB#ID128 Create new task for Fabio
-    # if line starts with time it will be a duration item otherwise a time item
+    <#
+	Scenario 1: worklog line indicates a time entry
+	  - new entry using current time automatically
+                mgmt  itshop KB#ID128 Create new task for Fabio
+        Tokens: [0]   [1]    [2]      [3]
+	  - new entry using manual time
+                09:30 mgmt  itshop KB#ID128 Create new task for Fabio
+        Tokens: [0]   [1]   [2]    [3]      [4]
+
+    Scenario 1: worklog line indicates a duration entry
+      - line starts with duration
+                d09:30 mgmt  itshop KB#ID128 Create new task for Fabio
+        Tokens: [0]    [1]   [2]    [3]      [4]
+	#>
     $ArrayOfToken = $WorklogLine.Split(' ')
 
-    $IsDurationLine = IsTimeValid -PotentialTime $ArrayOfToken[0]
+    $IsDurationLine = IsDurationTime -PotentialTime $ArrayOfToken[0]
     if($IsDurationLine) {
-        $Time = $ArrayOfToken[0]
+        $Time = $ArrayOfToken[0].Substring(1) # remove leading character
         $WorkType = $ArrayOfToken[1]
         $Project = $ArrayOfToken[2]
         if(IsTicketIDValid -PotentialTicketID $ArrayOfToken[3]) {
@@ -569,22 +604,43 @@ function Add-WorklogLine {
         }
         New-WorklogItem -WorkType $WorkType -Project $Project -TicketID $TicketID -Comment $Comment -Duration -DurationTime $Time -CustomWorklogFile $CustomWorklogFile
     } else { # Time line
-        $WorkType = $ArrayOfToken[0]
-        if($WorkType -eq $WorklogTypeOff) {
-            $Project = ''
-            $TicketID = ''
-            $Comment = ''
-        } else {
-            $Project = $ArrayOfToken[1]
-            if(IsTicketIDValid -PotentialTicketID $ArrayOfToken[2]) {
-                $TicketID = $ArrayOfToken[2]
-                $Comment = GetComment -ArrayOfToken $ArrayOfToken -BeginIndex 3
-            } else {
+        $IsManualTime = IsTimeValid -PotentialTime $ArrayOfToken[0]
+        if($IsManualTime) {
+            $ManualTime = $ArrayOfToken[0]
+            $WorkType = $ArrayOfToken[1]
+            if($WorkType -eq $WorklogTypeOff) {
+                $Project = ''
                 $TicketID = ''
-                $Comment = GetComment -ArrayOfToken $ArrayOfToken -BeginIndex 2
+                $Comment = ''
+            } else {
+                $Project = $ArrayOfToken[2]
+                if(IsTicketIDValid -PotentialTicketID $ArrayOfToken[3]) {
+                    $TicketID = $ArrayOfToken[3]
+                    $Comment = GetComment -ArrayOfToken $ArrayOfToken -BeginIndex 4
+                } else {
+                    $TicketID = ''
+                    $Comment = GetComment -ArrayOfToken $ArrayOfToken -BeginIndex 3
+                }
             }
+            New-WorklogItem -WorkType $WorkType -Project $Project -TicketID $TicketID -Comment $Comment -Time -ManualTime $ManualTime -CustomWorklogFile $CustomWorklogFile
+        } else {
+            $WorkType = $ArrayOfToken[0]
+            if($WorkType -eq $WorklogTypeOff) {
+                $Project = ''
+                $TicketID = ''
+                $Comment = ''
+            } else {
+                $Project = $ArrayOfToken[1]
+                if(IsTicketIDValid -PotentialTicketID $ArrayOfToken[2]) {
+                    $TicketID = $ArrayOfToken[2]
+                    $Comment = GetComment -ArrayOfToken $ArrayOfToken -BeginIndex 3
+                } else {
+                    $TicketID = ''
+                    $Comment = GetComment -ArrayOfToken $ArrayOfToken -BeginIndex 2
+                }
+            }
+            New-WorklogItem -WorkType $WorkType -Project $Project -TicketID $TicketID -Comment $Comment -Time -CustomWorklogFile $CustomWorklogFile
         }
-        New-WorklogItem -WorkType $WorkType -Project $Project -TicketID $TicketID -Comment $Comment -Time -CustomWorklogFile $CustomWorklogFile
     }
 }
 
