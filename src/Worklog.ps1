@@ -1,16 +1,34 @@
-﻿<#
-        Worklog.ps1
+﻿#Requires -Version 4.0
+<#
+        .SYNOPSIS
+        This is a powershell re-implementation of the worklog idea originally developed by Erich Obermühlner (http://obermuhlner.ch).
+        The idea behind worklog is to have an easy way to capture a log of your spent time on different working tasks.
+        Based on the captured log, one can create reports showing on what and how long it was worked on.
 
-        Date       T/D Time   WorkType  Project   Ticket      Comment
-        2016/09/01 T   07:00  admin     IT Shop   OTRS#160987 answer question
+        .NOTES
+        File Name  : Worklog.ps1 
+        Author     : Paul Signer (psig@gmx.ch)
+        Date       : 07.12.2016
+        Version    : 1.4
+
+        .HISTORY
+        Version    : 1.4 (07.12.2016) - Improved coding style, added OnOfftime feature, added WorklogSettings.ps1 file
+        Version    : 1.3 (29.11.2016) - Improve coding style, some bug fixes, added more options
+        Version    : 1.2 (22.11.2016) - Improve coding style, remove duplicates, some bug fixes
+        Version    : 1.1 (29.08.2016) - The new version is version 1.0 modified to be a cmdlet.
+
+        .EXAMPLES
+        Format of worklog.txt
+        Date       T/D Time   WorkType  Project   Ticket       Comment
+        2016/09/01 T   07:00  admin     Proj1      Tick#16309  answer question
         2016/09/01 T   12:00  off
-        2016/09/01 T   12:00  code      ITSM      KB#ID102    work on powershell tools   
+        2016/09/01 T   12:00  code      Proj2      Tick#ID102  work on powershell tools   
         2016/09/01 T   18:00  off
+        2016/09/02 D   01:30  admin     Proj3                  groups meeting
+        2016/09/02 D   04:00  educ      Proj3                  learn about javascript
+        2016/09/02 D   03:30  code      Proj1      Tick#ID102  work on powershell tools
 
-        2016/09/02 D   01:30  admin     ID-PPF-PM             groups meeting
-        2016/09/02 D   04:00  educ      ID-PPF-PM             learn about javascript
-        2016/09/02 D   03:30  code      ITSM      KB#ID102    work on powershell tools
-
+        Meaning of workog item properties
         Date     : yyyy/mm/dd
         T_D      : T - Time / D - Duration
         Time     : hh:mm
@@ -19,43 +37,61 @@
         Ticket   : optional, but used prefix defined in worklog_params.ps1
         Comment  : optional free text
 
+        Cmdlet to add a worklog entry
+        Add-WorklogLine 'admin Proj1 Work comment'
+        Add-WorklogLine '08:30 admin Proj1 Work comment'
+        Add-WorklogLine 'D02:00 admin Proj1 Work comment'
+
+        Cmdlet to get a report of worklog entries
+        Show-WorklogReport -GroupingPropery Date
+
 #>
 
+#region "settings"
 $WorkingDirParam = $PSScriptRoot
 $WorklogFileParam = "$WorkingDirParam\worklog.txt"
+$WorklogSettingFile = "$WorkingDirParam\WorklogSettings.ps1"
 
+try { . $WorklogSettingFile } catch { Write-Error -Message "No WorklogSetting.ps1 found in $WorklogSettingFile! Only loaded defaults"}
+
+# Worklog WorkType should be defined in WorklogSettings.ps1, if not define some defaults
+if(!$WorklogWorkType) 
+{
+    $WorklogWorkType = @(
+        'admin', 
+        'meet', 
+        'educ', 
+        'code', 
+        'docu'
+    )
+}
+# add WorkType 'off' as mandatory element
 $WorklogTypeOff = 'off'
-$WorklogWorkType = @(
-    "$WorklogTypeOff", 
-    'admin', 
-    'meet', 
-    'mgmt', 
-    'educ', 
-    'arch', 
-    'spec', 
-    'code', 
-    'arch', 
-    'docu', 
-    'educ', 
-    'test', 
-    'vac'
-)
+$WorklogWorkType += $WorklogTypeOff
 
-$WorklogProject = @(
-    'ID-PPF', 
-    'ID-PPF-PM', 
-    'ITSM', 
-    'ITShop', 
-    'STO'
-)
+# Worklog Project should be defined in WorklogSettings.ps1, if not define some defaults
+if(!$WorklogProject)
+{
+    $WorklogProject = @(
+        'Proj1', 
+        'Proj2',
+        'Proj3'
+    )
+}
 
+# Worklog Ticket Prefix should be defined in WorklogSettings.ps1, if not define some defaults
+if(!$WorklogTicketPrefix)
+{
+    $WorklogTicketPrefix = @(
+        'Tick#'
+    )
+}
+# add prefix 'n.a.' as mandatory element
 $WorklogTicketNo = 'n.a.'
-$WorklogTicketPrefix = @(
-    'n.a.', 
-    'OTRS#', 
-    'KB#'
-)
+$WorklogTicketPrefix += $WorklogTicketNo
+#endregion
 
+#region "base functions"
 function Script:GetWorklogDayHeader 
 {
     $CurrentDate = date
@@ -92,6 +128,68 @@ function Script:ReadWorklogFile
         $_ -notlike '#*' -and $_ -notlike ''
     }
     $CleanedLines
+}
+
+function Script:GetWorklogFileHeader 
+{
+    Param(
+        $WorklogFile
+    )
+    $DateAndTime = (GetCurrentDateAsString) + ' - ' + (GetCurrentTimeAsString)
+    $WorklogFileHeader = @"
+# worklog © 2016 by Paul Signer
+#
+# This file '$WorklogFile' was created by
+# worklog r0.1 (build r0.1 2016-09-05)
+# $DateAndTime
+# 
+"@
+    $WorklogFileHeader
+}
+
+function Script:GetWorklogFile 
+{
+    Param(
+        $CustomWorklogFile
+    )
+
+    if($CustomWorklogFile) 
+    {
+        # check for custom worklog file, if not existing create it
+        $WorklogFile = $CustomWorklogFile
+        # if file exists --> use it / if file does not exist --> create it
+        if(!(Test-Path $CustomWorklogFile)) 
+        {
+            Add-Content -Value $(GetWorklogFileHeader -WorklogFile $WorklogFile) -Path $WorklogFile
+        }
+    }
+    else 
+    {
+        # no custom worklog file, use default worklog file, if not existing create it
+        $WorklogFile = $WorklogFileParam
+        # if file exists --> use it / if file does not exist --> create it
+        if(!(Test-Path $WorklogFileParam)) 
+        {
+            Add-Content -Value $(GetWorklogFileHeader -WorklogFile $WorklogFile) -Path $WorklogFile
+        }
+    }
+    $WorklogFile
+}
+
+function Script:GetLastLine 
+{
+    Param(
+        $WorklogFile
+    )
+    $WorklogLines = Get-Content -Path $WorklogFile
+    for($i = ($WorklogLines.Count-1); $i -gt 0; $i--) 
+    {
+        if($WorklogLines[$i].Length -gt 0) 
+        {
+            return $WorklogLines[$i]
+            break
+        }
+    }
 }
 
 function Script:IsTicketIDValid 
@@ -159,43 +257,43 @@ function Script:GetComment
     $Comment
 }
 
-function Script:ValidateWorklogItem 
+function Script:ValidateGroupingProperty 
 {
     Param(
-        $WorklogItem
+        [Parameter(Mandatory = $True)]
+        [ValidateSet('WorkType','Project','TicketID')]
+        $GroupingProperty,
+        [Parameter(Mandatory = $True)]
+        $PropertyValue
     )
-    $WorkType = $WorklogItem.WorkType
-    $Project = $WorklogItem.Project
-    $TicketID = $WorklogItem.TicketId
-    ValidateGroupingProperty -GroupingProperty WorkType -PropertyValue $WorkType
-    if($WorkType -ne 'off') 
+    if($GroupingProperty -eq 'WorkType') 
     {
-        ValidateGroupingProperty -GroupingProperty Project -PropertyValue $Project
-        $TicketID = $WorklogItem.TicketID
-        if($TicketID) 
+        if(!($WorklogWorkType -contains $PropertyValue)) 
         {
-            ValidateGroupingProperty -GroupingProperty TicketID -PropertyValue $TicketID
+            Throw("Invalid WorkType property: $PropertyValue")
+        }
+    }
+    if($GroupingProperty -eq 'Project') 
+    {
+        if(!($WorklogProject -contains $PropertyValue)) 
+        {
+            Throw("Invalid Project property: $PropertyValue")
+        }
+    }
+    if($GroupingProperty -eq 'TicketID') 
+    {
+        if($PropertyValue -and ($PropertyValue.Length -gt 0)) 
+        {
+            if(!(IsTicketIDValid -PotentialTicketID $PropertyValue)) 
+            {
+                Throw("Invalid TicketID property: $PropertyValue")
+            }
         }
     }
 }
+#endregion
 
-function Script:GetWorklogFileHeader 
-{
-    Param(
-        $WorklogFile
-    )
-    $DateAndTime = (GetCurrentDateAsString) + ' - ' + (GetCurrentTimeAsString)
-    $WorklogFileHeader = @"
-# worklog © 2016 by Paul Signer
-#
-# This file '$WorklogFile' was created by
-# worklog r0.1 (build r0.1 2016-09-05)
-# $DateAndTime
-# 
-"@
-    $WorklogFileHeader
-}
-
+#region "single workitem functions"
 function Script:ConvertWorklogLine 
 {
     Param(
@@ -249,6 +347,26 @@ function Script:ConvertWorklogLine
     }
 
     $WorklogLineAsHashtable
+}
+
+function Script:ValidateWorklogItem 
+{
+    Param(
+        $WorklogItem
+    )
+    $WorkType = $WorklogItem.WorkType
+    $Project = $WorklogItem.Project
+    $TicketID = $WorklogItem.TicketId
+    ValidateGroupingProperty -GroupingProperty WorkType -PropertyValue $WorkType
+    if($WorkType -ne 'off') 
+    {
+        ValidateGroupingProperty -GroupingProperty Project -PropertyValue $Project
+        $TicketID = $WorklogItem.TicketID
+        if($TicketID) 
+        {
+            ValidateGroupingProperty -GroupingProperty TicketID -PropertyValue $TicketID
+        }
+    }
 }
 
 function script:GetOnOffTimeString
@@ -307,6 +425,95 @@ function script:GetOnOffTimeString
     $OnOffMessage.Trim()
 }
 
+function Script:Write-WorklogItem 
+{
+    Param(
+        $WorklogItem
+    )
+    $ItemTemplate = '{0,10} {1,1} {2,5} {3,-5} {4,-10} {5,-15} {6}'
+    $ItemTemplate -f $WorklogItem.Date, $WorklogItem.T_D, $WorklogItem.Time, $WorklogItem.WorkType, $WorklogItem.Project, $WorklogItem.TicketID, $WorklogItem.Comment
+}
+
+function Script:ConvertTimeIntoDurationItem 
+{
+    Param(
+        $StartItem,
+        $EndItem
+    )
+    $StartTime = New-TimeSpan -Hours $StartItem.Time.Split(':')[0] -Minutes $StartItem.Time.Split(':')[1]
+    $EndTime = New-TimeSpan -Hours $EndItem.Time.Split(':')[0] -Minutes $EndItem.Time.Split(':')[1]
+
+    $Time = '{0:hh}:{0:mm}' -f ($EndTime - $StartTime)
+
+    $TimeItem = @{
+        Date     = $StartItem.Date
+        T_D      = 'D'
+        Time     = $Time
+        WorkType = $StartItem.WorkType
+        Project  = $StartItem.Project
+        TicketID = $StartItem.TicketID
+        Comment  = $StartItem.Comment
+    }
+    $TimeItem
+}
+
+function Script:AddNewDayLine 
+{
+    Param(
+        $WorklogFile
+    )
+    $LastLine = GetLastLine -WorklogFile $WorklogFile
+    $LastItem = ConvertWorklogLine -WorklogLine $LastLine
+    $LastItem.Date
+}
+
+function Script:ConvertTimeIntoDurationWorklogItems 
+{
+    Param(
+        $WorklogItems
+    )
+
+    $ConvertedWorklogItems = @()
+    
+    if($WorklogItems -and $WorklogItems.getType().Name -eq @().getType().Name) 
+    {
+        $ItemCount = $WorklogItems.Count
+        
+        for($i = 0;$i -lt $ItemCount; $i++) 
+        {
+            if($WorklogItems[$i].T_D -eq 'T') 
+            {
+                if(($WorklogItems[$i].WorkType) -ne 'off') 
+                {
+                    $TimeItem = ConvertTimeIntoDurationItem -StartItem $WorklogItems[$i] -EndItem $WorklogItems[$i+1]
+                    $ConvertedWorklogItems += $TimeItem
+                }
+            }
+            else 
+            {
+                #$DurationItem[i$].T_D -eq 'T'
+                $ConvertedWorklogItems += $WorklogItems[$i]
+            }
+        }
+    }
+    else 
+    { 
+        if($WorklogItems.T_D -eq 'T') 
+        {
+            Write-Error -Message "Single WorklogItem with T_D=T not valid: $WorklogItems"
+        }
+        else 
+        {
+            #$DurationItem[i$].T_D -eq 'T'
+            $ConvertedWorklogItems += $WorklogItems
+        }
+    }
+    $ConvertedWorklogItems
+}
+
+#endregion
+
+#region "grouped worklog item functions"
 function Script:GroupWorklogItems 
 {
     Param(
@@ -343,15 +550,6 @@ function Script:GroupWorklogItems
         $ArrayOfGroupedWorklogItems += $GroupedWorklogItems
     }
     $ArrayOfGroupedWorklogItems
-}
-
-function Script:Write-WorklogItem 
-{
-    Param(
-        $WorklogItem
-    )
-    $ItemTemplate = '{0,10} {1,1} {2,5} {3,-5} {4,-10} {5,-15} {6}'
-    $ItemTemplate -f $WorklogItem.Date, $WorklogItem.T_D, $WorklogItem.Time, $WorklogItem.WorkType, $WorklogItem.Project, $WorklogItem.TicketID, $WorklogItem.Comment
 }
 
 function Script:Write-GroupedWorklogItems 
@@ -406,72 +604,6 @@ function Script:Write-ArrayOfGroupedWorklogItems
     }
 }
 
-function Script:ConvertTimeIntoDurationWorklogItems 
-{
-    Param(
-        $WorklogItems
-    )
-
-    $ConvertedWorklogItems = @()
-    
-    if($WorklogItems -and $WorklogItems.getType().Name -eq @().getType().Name) 
-    {
-        $ItemCount = $WorklogItems.Count
-        
-        for($i = 0;$i -lt $ItemCount; $i++) 
-        {
-            if($WorklogItems[$i].T_D -eq 'T') 
-            {
-                if(($WorklogItems[$i].WorkType) -ne 'off') 
-                {
-                    $TimeItem = ConvertTimeIntoDurationItem -StartItem $WorklogItems[$i] -EndItem $WorklogItems[$i+1]
-                    $ConvertedWorklogItems += $TimeItem
-                }
-            }
-            else 
-            {
-                #$DurationItem[i$].T_D -eq 'T'
-                $ConvertedWorklogItems += $WorklogItems[$i]
-            }
-        }
-    }
-    else 
-    { 
-        if($WorklogItems.T_D -eq 'T') 
-        {
-            Write-Error -Message "Single WorklogItem with T_D=T not valid: $WorklogItems"
-        }
-        else 
-        {
-            #$DurationItem[i$].T_D -eq 'T'
-            $ConvertedWorklogItems += $WorklogItems
-        }
-    }
-    $ConvertedWorklogItems
-}
-
-function Script:ConvertTimeIntoDurationItem 
-{
-    Param(
-        $StartItem,
-        $EndItem
-    )
-    $StartTime = New-TimeSpan -Hours $StartItem.Time.Split(':')[0] -Minutes $StartItem.Time.Split(':')[1]
-    $EndTime = New-TimeSpan -Hours $EndItem.Time.Split(':')[0] -Minutes $EndItem.Time.Split(':')[1]
-
-    $Time = '{0:hh}:{0:mm}' -f ($EndTime - $StartTime)
-
-    $TimeItem = @{
-        Date     = $StartItem.Date
-        T_D      = 'D'
-        Time     = $Time
-        WorkType = $StartItem.WorkType
-        Project  = $StartItem.Project
-        TicketID = $StartItem.TicketID
-        Comment  = $StartItem.Comment
-    }
-    $TimeItem
-}
 
 function Script:GroupAndSumUpWorklogItems 
 {
@@ -520,95 +652,6 @@ function Script:GroupAndSumUpWorklogItems
     $ArrayOfGroupedAndSummedUpWorklogItems
 }
 
-function Script:GetLastLine 
-{
-    Param(
-        $WorklogFile
-    )
-    $WorklogLines = Get-Content -Path $WorklogFile
-    for($i = ($WorklogLines.Count-1); $i -gt 0; $i--) 
-    {
-        if($WorklogLines[$i].Length -gt 0) 
-        {
-            return $WorklogLines[$i]
-            break
-        }
-    }
-}
-
-function Script:AddNewDayLine 
-{
-    Param(
-        $WorklogFile
-    )
-    $LastLine = GetLastLine -WorklogFile $WorklogFile
-    $LastItem = ConvertWorklogLine -WorklogLine $LastLine
-    $LastItem.Date
-}
-
-function Script:ValidateGroupingProperty 
-{
-    Param(
-        [Parameter(Mandatory = $True)]
-        [ValidateSet('WorkType','Project','TicketID')]
-        $GroupingProperty,
-        [Parameter(Mandatory = $True)]
-        $PropertyValue
-    )
-    if($GroupingProperty -eq 'WorkType') 
-    {
-        if(!($WorklogWorkType -contains $PropertyValue)) 
-        {
-            Throw("Invalid WorkType property: $PropertyValue")
-        }
-    }
-    if($GroupingProperty -eq 'Project') 
-    {
-        if(!($WorklogProject -contains $PropertyValue)) 
-        {
-            Throw("Invalid Project property: $PropertyValue")
-        }
-    }
-    if($GroupingProperty -eq 'TicketID') 
-    {
-        if($PropertyValue -and ($PropertyValue.Length -gt 0)) 
-        {
-            if(!(IsTicketIDValid -PotentialTicketID $PropertyValue)) 
-            {
-                Throw("Invalid TicketID property: $PropertyValue")
-            }
-        }
-    }
-}
-
-function Script:GetWorklogFile 
-{
-    Param(
-        $CustomWorklogFile
-    )
-
-    if($CustomWorklogFile) 
-    {
-        # check for custom worklog file, if not existing create it
-        $WorklogFile = $CustomWorklogFile
-        # if file exists --> use it / if file does not exist --> create it
-        if(!(Test-Path $CustomWorklogFile)) 
-        {
-            Add-Content -Value $(GetWorklogFileHeader -WorklogFile $WorklogFile) -Path $WorklogFile
-        }
-    }
-    else 
-    {
-        # no custom worklog file, use default worklog file, if not existing create it
-        $WorklogFile = $WorklogFileParam
-        # if file exists --> use it / if file does not exist --> create it
-        if(!(Test-Path $WorklogFileParam)) 
-        {
-            Add-Content -Value $(GetWorklogFileHeader -WorklogFile $WorklogFile) -Path $WorklogFile
-        }
-    }
-    $WorklogFile
-}
 
 function Script:AddWorklogLineToFile  
 {
@@ -652,6 +695,9 @@ function Script:AddWorklogLineToFile
     Add-Content -Path $WorklogFile -Value $WorklogLine
 }
 
+#endregion
+
+#region "private cmdlet"
 function New-WorklogItem 
 {
     Param(
@@ -768,7 +814,9 @@ function Add-DurationWorklogItem
     )
     New-WorklogItem -WorkType $WorkType -Project $Project -TicketID $TicketID -Comment $Comment -Duration -DurationTime $DurationTime -CustomWorklogFile $CustomWorklogFile
 }
+#endregion
 
+#region "public cmdlet"
 function Add-WorklogLine 
 {
     Param(
@@ -926,3 +974,4 @@ function Show-WorklogReportDayOnOff
     
     Write-ArrayOfGroupedWorklogItems -ArrayOfGroupedWorklogItems $GroupedWorklogItems -OnlyGroupHeader $True
 }
+#endregion
