@@ -7,125 +7,87 @@
 #
 
 ### Thursday 2016/09/01 ###
-2016/09/01 D 08:12 educ id-ppf-pm Lean Sigma Yello Belt education
-
-### Friday 2016/09/02 ###
-2016/09/02 T 08:00 mgmt itshop KB#ID128 Create new task for Fabio
-2016/09/02 T 08:30 code itsm Explore OTRS Web Service
-2016/09/02 T 09:30 meet itsm Status call with D.Gasser
-2016/09/02 T 10:30 code itsm Explore OTRS Web Service
-2016/09/02 T 11:00 mgmt itshop Work on tickets
-2016/09/02 T 11:30 code itsm Explore OTRS Web Service
-2016/09/02 T 12:45 off
-2016/09/02 T 13:10 code itsm Explore OTRS Web Service
-2016/09/02 T 15:30 meet itshop Discuss an issue with Andrew
-2016/09/02 T 16:00 code itsm Explore OTRS Web Service
-2016/09/02 T 17:00 off
+2016/09/01 D 08:15 educ MyOrg Lean Sigma Yello Belt education
 
 ### Monday 2016/09/05 ###
-2016/09/05 T 08:00 mgmt itshop Enable Portal Announcement for deployment r1.3
-2016/09/05 T 08:15 code itsm Explore OTRS Web Service
-2016/09/05 T 08:45 mgmt itshop Work on tickets
-2016/09/05 T 09:00 code itsm Explore OTRS Web Service
+2016/09/05 T 08:00 mgmt Proj1 Do planning for Proj1
+2016/09/05 T 08:45 code Proj1 Explore Web Service
+2016/09/05 T 10:15 mgmt Proj2 Tick#ID1000 Work on ticket
+2016/09/05 T 11:10 code Proj1 Explore Web Service
 2016/09/05 T 12:00 off
-2016/09/05 T 12:45 code itsm Document how to make OTRS Web Service working
-2016/09/05 T 15:00 mgmt itshop Prepare new SMlets powershell Module
-2016/09/05 T 15:45 code itsm Create ticket using OTRS Web Service
+2016/09/05 T 12:45 meet Proj3 Discuss project status
+2016/09/05 T 15:00 code Proj1 Document how to make Web Service working
 2016/09/05 T 17:30 off
 
 ### Tuesday 2016/09/06 ###
-2016/09/06 T 08:00 code itshop Update deployment scripts for next PRD deployment
-2016/09/06 T 08:45 test itshop Perform QSS Tests as preparation for PRD deployment
+2016/09/06 T 08:00 spec Proj3 Work on user stories
+2016/09/06 T 10:30 test Proj2 Perform QSS Tests as preparation for PRD deployment
 2016/09/06 T 11:30 off
-2016/09/06 T 12:00 test itshop Perform QSS Tests as preparation for PRD deployment
-2016/09/06 T 13:00 code itshop Resolve Problem with duplicate AffectedUser -> prepare repository for deployment
-2016/09/06 T 14:00 meet id-ppf-pm Group meeting
-2016/09/06 T 16:00 test itshop Perform QSS Tests as preparation for PRD deployment
+2016/09/06 T 12:00 test Proj2 Perform QSS Tests as preparation for PRD deployment
+2016/09/06 T 13:00 code Proj2 Tick#ID1001 Resolve Problem with duplicate AffectedUser
+2016/09/06 T 14:00 meet MyOrg Group meeting
+2016/09/06 T 16:00 test Proj2 Perform QSS Tests as preparation for PRD deployment
 2016/09/06 T 17:15 off
 
 ### Wednesday 2016/09/07 ###
-2016/09/07 T 08:00 test itshop Perform DEV Tests & Bug Fixing as preparation for PRD deployment
-2016/09/07 T 10:00 mgmt itshop OTRS#ID#1636018 Delete ETHIS Requests due to wrong order
-2016/09/07 T 10:30 test itshop Perform DEV Tests & Bug Fixing as preparation for PRD deployment
-2016/09/07 T 12:30 test itshop Perform DEV Tests & Bug Fixing as preparation for PRD deployment
-2016/09/07 T 15:30 mgmt itshop OTRS#ID#1636145 Resolve problem not existing symbolic link (bad sw version)
-2016/09/07 T 16:30 test itshop Perform DEV Tests & Bug Fixing as preparation for PRD deployment
+2016/09/07 T 08:00 test Proj2 Perform DEV Tests & Bug Fixing as preparation for PRD deployment
+2016/09/07 T 10:00 mgmt Proj2 Tick#ID1002 Delete Requests due to wrong order
+2016/09/07 T 10:30 test Proj2 Perform DEV Tests & Bug Fixing as preparation for PRD deployment
+2016/09/07 T 12:00 off
+2016/09/07 T 12:40 mgmt Proj2 Tick#ID#1003 Resolve problem with not existing symbolic link (bad sw version)
+2016/09/07 T 15:30 test Proj3 Work on user stories
 2016/09/07 T 17:15 off
 
 ### Thursday 2016/09/08 ###
-2016/09/08 T 08:10 code itshop Prepare deployment r1.3 --> QSS deployment
-2016/09/08 T 09:30 test itshop Perform QSS Tests as preparation for PRD deployment
+2016/09/08 T 08:10 code Proj2 Prepare deployment r1.3 --> QSS deployment
+2016/09/08 T 09:30 test Proj2 Perform QSS Tests as preparation for PRD deployment
 2016/09/08 T 12:10 off
-2016/09/08 T 12:55 test itshop Perform QSS Tests as preparation for PRD deployment
-2016/09/08 T 13:30 code itsm Perform deployment scsmdev --> itshdev
-2016/09/08 T 14:30 meet itsm Strategy meeting with Fabio & Dieter Gasser
-2016/09/08 T 16:30 code itsm Perform deployment scsmdev --> itshdev
+2016/09/08 T 12:55 mgmt Proj1 Project planning for Phase1
+2016/09/08 T 14:30 meet Proj3 Strategy meeting
+2016/09/08 T 16:30 mgmt Proj1 Project planning for Phase1
 2016/09/08 T 17:20 off
 
 ### Friday 2016/09/09 ###
-2016/09/09 D 05:00 code itshop prepare, execute and smke test r1.3 deplyoment
-2016/09/09 D 00:30 mgmt itshop OTRS#ID#1636548 Fix a failed order
-2016/09/09 T 12:30 spec itsm Work on new ITSM production data model
-2016/09/09 T 14:00 spec itsm Discussed Storage RO with Andrew
-2016/09/09 T 14:25 spec itsm Work on new ITSM production data model
+2016/09/09 D 05:00 code Proj2 Prepare, execute and smoke test r1.3 deplyoment
+2016/09/09 D 00:30 mgmt Proj2 Tick#ID1004 Fix a failed order
+2016/09/09 T 12:30 spec Proj3 Work on new production data model
+2016/09/09 T 14:00 spec Proj2 Discussion Storage RO 
+2016/09/09 T 14:25 spec Proj3 Work on new production data model
 2016/09/09 T 15:00 off  
 
 ### Monday 2016/09/12 ###
-2016/09/12 T 07:55 mgmt itshop Add OS and Lang to ETHIS Order
-2016/09/12 T 09:00 spec itsm Check Suggestion from D.Gasser, update data model and send Feedback
+2016/09/12 T 07:50 mgmt Proj2 Add OS and Lang to Order
+2016/09/12 T 09:00 spec Proj2 Check Suggestion from D.P, update data model and send Feedback
 2016/09/12 T 12:00 off
 
 ### Tuesday 2016/09/13 ###
-2016/09/13 T 08:00 code itshop Add OS and Lang to ETHIS Order
-2016/09/13 T 08:30 spec itsm update data model
-2016/09/13 T 10:00 meet itsm discuss data model with Fabio
-2016/09/13 T 10:45 mgmt itshop OTRS#ID#1636642 Analyze Failed Request ...
-2016/09/13 T 11:45 code itsm work on coding guideline for powershell modules, activities & runbooks
+2016/09/13 T 08:00 admin myOrg Time Reporting
+2016/09/13 T 08:30 mgmt Proj1 Update project plan
+2016/09/13 T 10:00 meet Proj2 Discuss data model
+2016/09/13 T 10:45 mgmt Proj2 Tick#ID1005 Analyze Failed Request ...
+2016/09/13 T 11:45 code Proj1 Work on coding guideline for powershell modules, activities & runbooks
 2016/09/13 T 12:00 off
-2016/09/13 T 12:45 code itsm work on coding guideline for powershell modules, activities & runbooks
-2016/09/13 T 14:20 mgmt itshop Ticket Meeting with Alex & Cuno
-2016/09/13 T 15:40 mgmt itshop OTRS#ID#1637111 answer ticket due to high priority
-2016/09/13 T 16:20 code itsm work on coding guideline for powershell modules, activities & runbooks
+2016/09/13 T 12:45 code Proj1 Work on coding guideline for powershell modules, activities & runbooks
+2016/09/13 T 14:20 mgmt Proj2 Ticket Meeting with support team
+2016/09/13 T 15:40 mgmt Proj2 Tick#ID1005 answer ticket due to high priority
+2016/09/13 T 16:20 code Proj1 Work on coding guideline for powershell modules, activities & runbooks
 2016/09/13 T 17:00 off
 
 ### Wednesday 2016/09/14 ###
-2016/09/14 T 08:00 spec itsm Think about users and their responsibilites
-2016/09/14 T 09:30 code itshop Fix problem with UserLz script
-2016/09/14 T 11:55 off  
-2016/09/14 T 12:25 code itshop Fix problem with UserLz script
-2016/09/14 T 14:30 mgmt itshop Support Fr.Angst-Schär with ETHIS question
-2016/09/14 T 15:30 mgmt itshop Analyze Problem with LK produced by Alex
-2016/09/14 T 16:30 code itshop Work on new Get-IPPServiceRequests Cmdlet
-2016/09/14 T 17:30 off  
+2016/09/14 D 08:15 educ MyOrg Seminer: How to kep a personal worklog
 
 ### Thursday 2016/09/15 ###
-2016/09/15 T 08:00 docu itsm Cleanup ITShop and ITSM documentation
+2016/09/15 T 08:00 docu Proj2 Cleanup documentation
 2016/09/15 T 12:45 off
-2016/09/15 T 13:15 code itshop Work on Cleaup script to remove duplicate SW object on SRs due to SW copy error
-2016/09/15 T 14:30 mgmt itshop Discuss mail template changes with Alex
-2016/09/15 T 15:30 spec itsm Discuss Storage User Prommts with Andrew 
-2016/09/15 T 16:30 code itshop Work on script to get SRs using different properties
+2016/09/15 T 13:15 code Proj2 Work on Cleaup script to remove duplicate objects
+2016/09/15 T 14:30 mgmt Proj2 Discuss mail template changes
+2016/09/15 T 15:30 spec Proj3 Discuss Stamp User Prompts
+2016/09/15 T 16:30 code Proj2 Work on script to get SRs using different properties
 2016/09/15 T 17:15 off
 
 ### Friday 2016/09/16 ###
-2016/09/16 T 08:00 code itshop Work on Cleanup Script
-2016/09/16 T 09:30 code itsm Work on OTRS Module
+2016/09/16 T 08:00 meet Proj3 Workshop about user stories
 2016/09/16 T 11:40 off  
-2016/09/16 T 12:10 code itsm Work on OTRS Module
-2016/09/16 T 13:40 spec itsm Discuss Storage RO with Andrew
-2016/09/16 T 14:40 code itsm Work on OTRS Module
-2016/09/16 T 16:00 admin itsm Confcall with D.Gasser
+2016/09/16 T 12:10 code Proj1 Work on Web Service Module
+2016/09/16 T 16:00 admin Proj2 Bi-Weekly statuscall
 2016/09/16 T 17:30 off  
-
-### Sunday 2016/09/18 ###
-2016/09/18 T 19:56 off  
-2016/09/18 T 19:57 off  
-2016/09/18 T 19:57 off  
-2016/09/18 T 19:57 off  
-2016/09/18 T 19:57 off  
-2016/09/18 T 20:03 off  
-2016/09/18 T 20:03 off  
-2016/09/18 T 20:03 off  
-2016/09/18 T 20:03 off  
-2016/09/18 T 20:07 off  
-2016/09/18 T 20:07 off  

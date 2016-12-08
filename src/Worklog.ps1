@@ -440,9 +440,16 @@ function Script:ConvertTimeIntoDurationItem
         $StartItem,
         $EndItem
     )
-    $StartTime = New-TimeSpan -Hours $StartItem.Time.Split(':')[0] -Minutes $StartItem.Time.Split(':')[1]
-    $EndTime = New-TimeSpan -Hours $EndItem.Time.Split(':')[0] -Minutes $EndItem.Time.Split(':')[1]
-
+    try
+    {
+        $StartTime = New-TimeSpan -Hours $StartItem.Time.Split(':')[0] -Minutes $StartItem.Time.Split(':')[1]
+        $EndTime = New-TimeSpan -Hours $EndItem.Time.Split(':')[0] -Minutes $EndItem.Time.Split(':')[1]
+    }
+    catch
+    {
+        $StartItem.Values
+        $EndItem.Values
+    }
     $Time = '{0:hh}:{0:mm}' -f ($EndTime - $StartTime)
 
     $TimeItem = @{
@@ -500,7 +507,7 @@ function Script:ConvertTimeIntoDurationWorklogItems
     { 
         if($WorklogItems.T_D -eq 'T') 
         {
-            Write-Error -Message "Single WorklogItem with T_D=T not valid: $WorklogItems"
+            Write-Error -Message "Single WorklogItem with T_D=T not valid: $WorklogItems.Values"
         }
         else 
         {
@@ -528,26 +535,42 @@ function Script:GroupWorklogItems
     Get-Unique
  
     $ArrayOfGroupedWorklogItems = @()
-    foreach($Prop in $ArrayOfUniqueProperties) 
+    if($GroupingProperty -eq 'Date')
     {
-        $SelectedItems = $WorklogItems | Where-Object -FilterScript {
-            $_.$GroupingProperty -eq $Prop 
-        }
-
-        if($GroupingProperty -eq 'Date')
+        foreach($Prop in $ArrayOfUniqueProperties) 
         {
+            $SelectedItems = $WorklogItems | Where-Object -FilterScript {
+                $_.$GroupingProperty -eq $Prop 
+            }
+
             $OnOffTime  = Script:GetOnOffTimeString -WorklogItems $SelectedItems
+
+            $SelectedItems = Script:ConvertTimeIntoDurationWorklogItems -WorklogItems $SelectedItems
+
+            $GroupedWorklogItems = @{
+                GroupingProperty = $Prop
+                OnOffTime = $OnOffTime
+                WorklogItems     = $SelectedItems
+            }
+            $ArrayOfGroupedWorklogItems += $GroupedWorklogItems
         }
+    }
+    else
+    {
+        $DurationWorkItems = Script:ConvertTimeIntoDurationWorklogItems -WorklogItems $WorklogItems
 
-        $SelectedItems = Script:ConvertTimeIntoDurationWorklogItems -WorklogItems $SelectedItems
+        foreach($Prop in $ArrayOfUniqueProperties) 
+        {
+            $SelectedItems = $DurationWorkItems | Where-Object -FilterScript {
+                $_.$GroupingProperty -eq $Prop 
+            }
 
-        $GroupedWorklogItems = @{
-            GroupingProperty = $Prop
-            OnOffTime = $OnOffTime
-            WorklogItems     = $SelectedItems
+            $GroupedWorklogItems = @{
+                GroupingProperty = $Prop
+                WorklogItems     = $SelectedItems
+            }
+            $ArrayOfGroupedWorklogItems += $GroupedWorklogItems
         }
-
-        $ArrayOfGroupedWorklogItems += $GroupedWorklogItems
     }
     $ArrayOfGroupedWorklogItems
 }
@@ -577,7 +600,14 @@ function Script:Write-GroupedWorklogItems
         }
         $MinutesAsString = ('{0:mm}' -f $gwi.TotaledTime)
 
-        '{0,-10} TotaledTime: {1}:{2} [{3}]' -f $gwi.GroupingProperty, $HoursAsString, $MinutesAsString, $gwi.OnOffTime
+        if($gwi.OnOffTime)
+        {
+            '{0,-10} TotaledTime: {1}:{2} [{3}]' -f $gwi.GroupingProperty, $HoursAsString, $MinutesAsString, $gwi.OnOffTime
+        }
+        else
+        {
+            '{0,-10} TotaledTime: {1}:{2}' -f $gwi.GroupingProperty, $HoursAsString, $MinutesAsString
+        }
     }
     else 
     {
@@ -831,11 +861,12 @@ function Add-WorklogLine
             - new entry using current time automatically
             mgmt  itshop KB#ID128 Create new task for Fabio
             Tokens: [0]   [1]    [2]      [3]
+
             - new entry using manual time
             09:30 mgmt  itshop KB#ID128 Create new task for Fabio
             Tokens: [0]   [1]   [2]    [3]      [4]
 
-            Scenario 1: worklog line indicates a duration entry
+            Scenario 2: worklog line indicates a duration entry
             - line starts with duration
             d09:30 mgmt  itshop KB#ID128 Create new task for Fabio
             Tokens: [0]    [1]   [2]    [3]      [4]

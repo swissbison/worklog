@@ -1,7 +1,9 @@
 #Requires -Version 4.0
 <#
         .SYNOPSIS
-        <tbd>
+        Externlaizes worklog settings for easier modification of the user specific
+        WorkType, Project, TicketPrefix properties.
+        This file needs to be in the same location as the Worklog.ps1 file
 
         .NOTES
         File Name  : WorklogSettings.ps1 
@@ -28,11 +30,7 @@ $WorklogWorkType = @(
 )
 
 $WorklogProject = @(
-    'ID-PPF', 
-    'ID-PPF-PM', 
-    'ITSM', 
-    'ITShop', 
-    'STO'
+    'MyOrg',
     'Proj1', 
     'Proj2',
     'Proj3'
