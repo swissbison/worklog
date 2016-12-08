@@ -1,28 +1,28 @@
 # worklog © 2016 by Paul Signer
 #
-# This file C:\Users\psigner\polybox\personal\worklog\test1-worklog.txt was created by
+# This file C:\Users\psigner\polybox\personal\worklog\test2-worklog.txt was created by
 # worklog r0.1 (build r0.1 2016-09-05)
 # 2016/09/05 23:39:00
 # 
 
 ### Wednesday 2016/09/07 ###
-2016/09/07 T 09:41 admin itsm comment
+2016/09/07 T 09:41 admin Proj1 comment
 2016/09/07 T 09:41 off
 
 ### Thursday 2016/09/08 ###
-2016/09/08 T 09:57 admin itsm comment
+2016/09/08 T 09:57 admin Proj1 comment
 2016/09/08 T : off  
 
 ### Friday 2016/09/09 ###
-2016/09/09 T 08:02 admin itsm comment
+2016/09/09 T 08:02 admin Proj1 comment
 2016/09/09 T 08:02 off  
-2016/09/09 T 08:47 admin itsm comment
+2016/09/09 T 08:47 admin Proj1 comment
 2016/09/09 T 08:47 off  
 
 ### Monday 2016/09/12 ###
-2016/09/12 T 22:13 admin itsm comment
+2016/09/12 T 22:13 admin Proj1 comment
 2016/09/12 T 22:13 off  
-2016/09/12 T 22:26 admin itsm comment
+2016/09/12 T 22:26 admin Proj1 comment
 2016/09/12 T 22:26 off  
-2016/09/12 T 22:27 admin itsm comment
+2016/09/12 T 22:27 admin Proj1 comment
 2016/09/12 T 22:27 off  

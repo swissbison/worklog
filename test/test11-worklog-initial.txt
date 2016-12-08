@@ -74,7 +74,7 @@
 2016/09/13 T 17:00 off
 
 ### Wednesday 2016/09/14 ###
-2016/09/14 D 08:15 educ MyOrg Seminer: How to kep a personal worklog
+2016/09/14 D 08:15 educ MyOrg Seminer: How to keep a personal worklog
 
 ### Thursday 2016/09/15 ###
 2016/09/15 T 08:00 docu Proj2 Cleanup documentation
@@ -91,7 +91,3 @@
 2016/09/16 T 12:10 code Proj1 Work on Web Service Module
 2016/09/16 T 16:00 admin Proj2 Bi-Weekly statuscall
 2016/09/16 T 17:30 off  
-
-### Thursday 2016/12/08 ###
-2016/12/08 T 09:28 off  
-2016/12/08 T 09:28 off  

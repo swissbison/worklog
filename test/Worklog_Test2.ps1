@@ -14,7 +14,7 @@ $WorklogFile = "$TestDir\test2-worklog.txt"
 if(Test-Path $WorklogFile) {Remove-Item -Path $WorklogFile}
 Copy-Item -Path "$TestDir\test2-worklog-initial.txt" -Destination $WorklogFile
 
-Add-TimeWorklogItem -WorkType admin -Project itsm -TicketID '' -Comment 'comment' -CustomWorklogFile $WorklogFile
+Add-TimeWorklogItem -WorkType 'educ' -Project 'Proj3' -TicketID '' -Comment 'comment' -CustomWorklogFile $WorklogFile
 Add-OffWorklogItem -CustomWorklogFile $WorklogFile
 
 $Lines = Get-Content $WorklogFile

@@ -1,7 +1,7 @@
 ﻿<#
     ManualTestCase
 #>
-$TestCase = "Worklog_Test4.ps1"
+$TestCase = "Worklog_Test5.ps1"
 Write-Host "Testcase: $TestCase" -ForegroundColor Yellow
 
 $TestDir = $PSScriptRoot
@@ -17,7 +17,7 @@ if(Test-Path $WorklogFile) {Remove-Item -Path $WorklogFile}
 
 $SuccessCount = 0
 try{
-    Add-TimeWorklogItem -WorkType 'bad-worktype' -Project 'ID-PPF' -TicketID '' -Comment 'test21 - fail' -CustomWorklogFile $WorklogFile
+    Add-TimeWorklogItem -WorkType 'bad-worktype' -Project 'MyOrg' -TicketID '' -Comment 'test21 - fail' -CustomWorklogFile $WorklogFile
 } catch {
     $_
     $SuccessCount = $SuccessCount + 1
@@ -29,7 +29,7 @@ try{
     $SuccessCount = $SuccessCount + 1
 }
 try{
-    Add-TimeWorklogItem -WorkType 'mgmt' -Project 'itshop' -TicketID 'bad-ticket' -Comment 'test23 - fail' -CustomWorklogFile $WorklogFile
+    Add-TimeWorklogItem -WorkType 'mgmt' -Project 'Proj1' -TicketID 'bad-ticket' -Comment 'test23 - fail' -CustomWorklogFile $WorklogFile
 } catch {
     $_
     $SuccessCount = $SuccessCount + 1

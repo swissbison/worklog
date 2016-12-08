@@ -955,7 +955,8 @@ function Show-WorklogReport
         [ValidateSet('All','Date','WorkType','Project','TicketID')]
         [Parameter(Mandatory = $True)]
         $GroupingProperty,
-        $CustomWorklogFile
+        $CustomWorklogFile,
+        $ReturnObject=$False
     )
     $WorklogLines = ReadWorklogFile -WorklogFile (GetWorklogFile -CustomWorklogFile $CustomWorklogFile)
     $WorklogItems = $WorklogLines | ForEach-Object -Process {
@@ -988,21 +989,13 @@ function Show-WorklogReport
 
         }
     }
-    Write-ArrayOfGroupedWorklogItems -ArrayOfGroupedWorklogItems $GroupedWorklogItems
-}
-
-function Show-WorklogReportDayOnOff 
-{
-    Param(
-        $CustomWorklogFile
-    )
-    $WorklogLines = ReadWorklogFile -WorklogFile (GetWorklogFile -CustomWorklogFile $CustomWorklogFile)
-    $WorklogItems = $WorklogLines | ForEach-Object -Process {
-        ConvertWorklogLine -WorklogLine $_
+    if($ReturnObject -eq $True)
+    {
+        $GroupedWorklogItems
     }
-    
-    $GroupedWorklogItems = GroupWorklogItems -GroupingProperty Date -WorklogItems $WorklogItems
-    
-    Write-ArrayOfGroupedWorklogItems -ArrayOfGroupedWorklogItems $GroupedWorklogItems -OnlyGroupHeader $True
+    else
+    {
+        Write-ArrayOfGroupedWorklogItems -ArrayOfGroupedWorklogItems $GroupedWorklogItems
+    }
 }
 #endregion

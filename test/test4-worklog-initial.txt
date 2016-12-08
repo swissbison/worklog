@@ -6,7 +6,7 @@
 # 
 
 ### Saturday 2016/09/17 ###
-2016/09/17 T 09:00 bad-worktype ID-PPF test21 - fail
+2016/09/17 T 09:00 bad-worktype MyOrg test21 - fail
 2016/09/17 T 10:00 meet bad-project test22 - fail
-2016/09/17 T 11:00 mgmt itshop bad-ticket test21 - fail
+2016/09/17 T 11:00 mgmt Proj1 bad-ticket test21 - fail
 2016/09/17 T 12:00 off
